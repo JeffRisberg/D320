@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>D3 20</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <script type="text/javascript" src="js/d3.js"></script>
+  <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+</head>
+<body>
+
+<style type='text/css'>
+.chart {
+  margin-left: 42px;
+  font: 10px sans-serif;
+  shape-rendering: crispEdges;
+}
+
+.chart {
+  background-color: #eee;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+}
+
+.chart rect {
+  stroke: white;  
+}
+
+.chart text.bar {
+  fill: black;
+}
+
+</style>
+
+<script type="text/javascript"> 
+$(document).ready(function() {
+  
+  var svg = d3.select("body").append("svg")
+    .attr("class", "chart")
+    .attr("width", 900)
+    .attr("height", 350);
+ 
+  d3.json("http://demo.rallyon.com:8080/master/api/challenge/2333/challengeMember?apiKey=94025&max=25", function(error, memberList) {
+    console.log(error);
+    console.log(memberList);
+
+    if (memberList.length > 0) {
+	    memberList.sort(function(a,b) { return a.rank - b.rank } );
+	
+	    var max = memberList[0].score
+	   
+	    svg.data(memberList);
+	     
+	    svg.selectAll("div")
+	      .data(memberList)
+	      .enter().append("rect")
+	      .attr("width", "75")
+	      .attr("height", function(d) { return 300 * d.score/max; })
+	      .attr("transform", function(d, i) { return "translate(" + i*75 + "," + (330 - 300 * d.score/max) + ")" })
+	      .attr("fill", function(d) {
+					return "rgb(0, 0, " + (100 + Math.floor(150 * d.score/max)) + ")";
+	      })
+	      ;
+	       
+	    svg.selectAll("div")     
+	      .data(memberList) 
+	      .enter().append("text")
+	      .text(function(d) { return d.name; })
+	      .attr("transform", function(d, i) { return "translate(" + i*75 + "," + 345 + ")" });
+    }
+  });
+});
+</script>
+</body>
+</html>
